@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
+
 
 namespace MAS
 {
@@ -13,33 +15,27 @@ namespace MAS
         public double MinJumping { get; set; }
         public double StartingPrice { get; set; }
         public string BestOffersName { get; set; }
+        public Stopwatch AuctionTimer { get; set; }
+        public double TimeToWait { get; set; }
+        public DateTime StartTime { get; set; }
 
-
-        //public DateTime StartTime { get; set; }
-
-        public Auction(IProduct product ,  double minJumping, double startingPrice )
+        public Auction(IProduct product ,  double minJumping, double startingPrice, int timeToWait , DateTime startTime)
         {
             Product = product;
             MinJumping = minJumping;
             StartingPrice = startingPrice;
             BestPrice = startingPrice;
             AgentsName = new List<string>();
+            TimeToWait = new TimeSpan(0, 0, timeToWait).TotalSeconds;
             AuctionParticipants = new List<IAgent>();
-            
+            AuctionTimer = new Stopwatch();
+            StartTime = startTime;
         }
 
-        public Auction(IProduct product , double bestPrice , double minjumping, double startingPrice , DateTime startTime)
-        {
-            Product = product;
-            BestPrice = bestPrice;
-            MinJumping = minjumping;
-            StartingPrice = startingPrice;
-            //StartTime = startTime;
-        }
         public void SetAgentsToList(List<IAgent> agents)
         {
 
-            foreach(var agentName in AgentsName)
+            foreach (var agentName in AgentsName)
             {
                 foreach(var agent in agents )
                 {

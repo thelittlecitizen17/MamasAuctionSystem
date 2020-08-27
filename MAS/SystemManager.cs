@@ -20,56 +20,39 @@ namespace MAS
             List<Task> tasks = new List<Task>();
             while (Auctions.Count != 0)
             {
-                for (int i = 0; i < Auctions.Count; i++)
+                foreach(var auction in Auctions)
                 {
-                    if (true)
+                    if (auction.StartTime.ToString("yyyyMMddhhmm") == DateTime.Now.ToString("yyyyMMddhhmm")) 
                     {
-
-                        tasks.Add(Task.Run(() => _auctionCall(ref i)));
-
-                        //_auctionCall(ref i);
+                        tasks.Add(Task.Run(() => _auctionCall(auction)));
                     }
                 }
 
                 Task.WaitAll(tasks.ToArray());
 
             }
-        }
-        public async Task StartManagementSync()
-        {
-            while(Auctions.Count!=0)
-            {
-                for(int i=0; i<Auctions.Count; i++)
-                {
-                    if(true)
-                    {
-                        
-                        await Task.Run(() => _auctionCall(ref i));
-                        
-                        //_auctionCall(ref i);
-                    }
-                }
+            Console.WriteLine("\nWe are done! Thank you :)");
 
-            }
         }
-        private void _auctionCall(ref int i)
+
+        private void _auctionCall(IAuction auction)
         {
-            AuctionStarter auctionStarter = new AuctionStarter(Auctions[i], Agents);
+            AuctionStarter auctionStarter = new AuctionStarter(auction, Agents);
             auctionStarter.startAuction();
-            if (Auctions[i].AgentsName.Count != 0)
+            if (auction.AgentsName.Count != 0)
             {
-                AuctionManager auctionManager = new AuctionManager(Auctions[i]);
-                Console.WriteLine($"\nThe auction starts now!!! The min price is : {Auctions[i].BestPrice}");
+                AuctionManager auctionManager = new AuctionManager(auction);
+                Console.WriteLine($"\nThe auction on {auction.Product.Name} starts now!!! The min price is : {auction.BestPrice}");
                 auctionManager.Manage();
                 _restAgentsFlag();
-                Auctions.RemoveAt(Auctions.IndexOf(Auctions[i]));
-                i--;
+                Auctions.RemoveAt(Auctions.IndexOf(auction));
+               
 
             }
             else
             {
-                Auctions.RemoveAt(Auctions.IndexOf(Auctions[i]));
-                i--;
+                Auctions.RemoveAt(Auctions.IndexOf(auction));
+               
             }
         }
         private void _restAgentsFlag()

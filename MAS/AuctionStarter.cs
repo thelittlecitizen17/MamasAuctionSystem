@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MAS
 {
@@ -19,8 +21,8 @@ namespace MAS
         public void startAuction()
         {
             
-            Console.WriteLine($"\nThe {_auction.Product.Name} is offered for sale at a starting price of {_auction.StartingPrice} NIS");
-            Console.WriteLine($"Minimum jump differences between bids and bids is {_auction.MinJumping} NIS");
+            Console.WriteLine($"\nThe {_auction.Product.Name} is offered for sale at a starting price of {_auction.StartingPrice} NIS. " +
+                $" Minimum jump differences between bids and bids is {_auction.MinJumping} NIS");
             SubscribeAllAgents();
             onAuctionStarted();
             _auction.SetAgentsToList(_agents);
@@ -36,7 +38,9 @@ namespace MAS
         {
             if (AuctionStarted != null)
             {
-               AuctionStarted(this, new AuctionEventArg() { Auction = _auction });
+                var delegates = AuctionStarted.GetInvocationList();
+                Parallel.ForEach(delegates, d => d.DynamicInvoke(this, new AuctionEventArg() { Auction = _auction }));
+                //AuctionStarted(this, new AuctionEventArg() { Auction = _auction });
 
             }
         }

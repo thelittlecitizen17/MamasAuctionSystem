@@ -11,7 +11,5 @@ namespace MAS
         bool AccessToMainRoad { get; set; }
         bool AccessForDisabled { get; set; }
 
-
-        
     }
 }

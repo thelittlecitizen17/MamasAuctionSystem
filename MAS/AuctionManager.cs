@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MAS
 {
@@ -8,9 +9,8 @@ namespace MAS
     {
         public delegate void ActionProcessEventHandler(object obj, AuctionEventArg eventArgs);
         public event ActionProcessEventHandler ActionProcess;
-
+        private object _myLocker = new object();
         private IAuction _auction;
-
 
         public AuctionManager(IAuction auction)
         {
@@ -19,14 +19,19 @@ namespace MAS
         public void Manage()
         {
             SubscribeAllAgents();
-            while (!_checkIfAgentsIsDone())
+            while (!_checkIfAgentsIsDone() || _auction.TimeToWait<=_auction.AuctionTimer.Elapsed.Seconds)
             {
+                lock (_myLocker)
+                {
+                    _auction.AuctionTimer.Reset();
+                }
                 onAuction();  
             }
 
-            Console.WriteLine($"\nThe Auction is about to end... {_auction.BestOffersName} offered {_auction.BestPrice}");
-            Console.WriteLine($"Does anyone want to make a new offer?");
-            Console.WriteLine($"Going once.... Going twice...");
+            Console.WriteLine($"\nThe Auction is about to end... {_auction.BestOffersName} offered {_auction.BestPrice} for {_auction.Product.Name}\n" +
+                $"Does anyone want to make a new offer?\n" +
+                $"Going once.... Going twice...");
+
             if (!_checkIfAgentsIsDone())
             {
                 Console.WriteLine("We are going again!!!");
@@ -34,7 +39,7 @@ namespace MAS
             }
             else
             {
-                Console.WriteLine($"\nThe Winner is ... {_auction.BestOffersName} !!! Congratulations !!!");
+                Console.WriteLine($"\n{_auction.Product.Name} is sold! The Winner is ... {_auction.BestOffersName} !!! Congratulations !!!");
 
             }
 
@@ -51,15 +56,14 @@ namespace MAS
         {
             if (ActionProcess != null)
             {
-                ActionProcess(this, new AuctionEventArg() { Auction = _auction });
-
+                var delegates = ActionProcess.GetInvocationList();
+                Parallel.ForEach(delegates, d => d.DynamicInvoke(this, new AuctionEventArg() { Auction = _auction }));
             }
         }
 
         private bool _checkIfAgentsIsDone()
         {
             int count= 0;
-
             foreach(var agent in _auction.AuctionParticipants)
             {
                 if(agent.IsDone)
@@ -67,7 +71,6 @@ namespace MAS
                     count++;
                 }
             }
-
             if(count+1 == _auction.AuctionParticipants.Count)
             {
                 return true;
@@ -76,8 +79,6 @@ namespace MAS
             {
                 return false;
             }
-            
-            
         }
     }
 }
