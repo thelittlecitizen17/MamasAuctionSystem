@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MAS
 {
@@ -20,15 +22,22 @@ namespace MAS
             IAgent agent4 = new Agent("Ofir", 115000);
             IAgent agent5 = new Agent("Itay", 1000);
 
-            List<IProduct> products = new List<IProduct>() {product1};
+            List<IProduct> products = new List<IProduct>() {product1,product2};
             List<IAgent> agents = new List<IAgent>() { agent1, agent2, agent3, agent4, agent5 };
 
             IAuction auction1 = new Auction(product1, 100, 100000);
+            IAuction auction2 = new Auction(product2, 40, 10000);
 
-            List<IAuction> auctions = new List<IAuction>() { auction1 };
+            List<IAuction> auctions = new List<IAuction>() { auction1 ,auction2};
 
             SystemManager systemManager = new SystemManager(auctions,agents);
-            systemManager.StartManagement();
+            //systemManager.StartManagementSync();
+            m(systemManager);
+            Thread.Sleep(100000);
+        }
+        static async void m(SystemManager systemManager)
+        {
+            await systemManager.StartManagementParllelAsync();
         }
     }
 }
