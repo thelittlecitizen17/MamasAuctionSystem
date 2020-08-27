@@ -45,14 +45,29 @@ namespace MAS
                 Console.WriteLine($"\nThe auction on {auction.Product.Name} starts now!!! The min price is : {auction.BestPrice}");
                 auctionManager.Manage();
                 _restAgentsFlag();
-                Auctions.RemoveAt(Auctions.IndexOf(auction));
+                try
+                {
+                    Auctions.RemoveAt(Auctions.IndexOf(auction));
+                }
+                catch(ArgumentOutOfRangeException ex)
+                {
+                    Console.WriteLine($"Can't delete {auction.Product.Name} ");
+                }
+                
                
 
             }
             else
             {
-                Auctions.RemoveAt(Auctions.IndexOf(auction));
-               
+                try
+                {
+                    Auctions.RemoveAt(Auctions.IndexOf(auction));
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    Console.WriteLine($"Can't delete {auction.Product.Name} ");
+                }
+
             }
         }
         private void _restAgentsFlag()

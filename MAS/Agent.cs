@@ -21,7 +21,6 @@ namespace MAS
             IsDone = false;
         }
 
-
         public void OnMakeNewOffer(object obj, AuctionEventArg eventArgs)
         {
             if (AccountBalance >= eventArgs.Auction.BestPrice)
@@ -30,7 +29,7 @@ namespace MAS
                 {
                     double offer = _offer(eventArgs);
                     Console.WriteLine($"{Name} is offering {offer} for {eventArgs.Auction.Product.Name}");
-                    if (offer > eventArgs.Auction.BestPrice)
+                    if (offer > eventArgs.Auction.BestPrice && _makeOffer())
                     {
 
                         eventArgs.Auction.BestPrice = offer;
@@ -38,13 +37,16 @@ namespace MAS
                         AccountBalance = AccountBalance - (offer - eventArgs.Auction.StartingPrice);
                         eventArgs.Auction.AuctionTimer.Restart();
                     }
+                    else
+                    {
+                        Console.WriteLine($"{Name} Do not want to make an offer for {eventArgs.Auction.Product.Name} now");
+                    }
                 }
             }
             else
             {
                 IsDone = true;
             }
-           
 
         }
 
@@ -65,6 +67,14 @@ namespace MAS
             {
                 Console.WriteLine($"\n{Name} has NO MONEY!!!");
             }
+        }
+
+        private bool _makeOffer()
+        {
+            Random random = new Random();
+            int randomNumber = random.Next(100);
+            return randomNumber <= 50;
+
         }
         private double _offer(AuctionEventArg eventArgs)
         {

@@ -25,8 +25,8 @@ namespace MAS
             List<IProduct> products = new List<IProduct>() {product1,product2};
             List<IAgent> agents = new List<IAgent>() { agent1, agent2, agent3, agent4, agent5 };
 
-            var startDate1 = new DateTime(2020, 08, 27, 21, 05, 0);
-            var startDate2 = new DateTime(2020, 08, 28, 21, 05, 0);
+            var startDate1 = new DateTime(2020, 08, 27, 21, 59, 0);//yyyy,mm,dd,hh,mm,s
+            var startDate2 = new DateTime(2020, 08, 27, 21, 59, 0);
 
             IAuction auction1 = new Auction(product1, 100, 100000,4, startDate1);
             IAuction auction2 = new Auction(product2, 40, 10000,4, startDate2);
